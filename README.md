@@ -1,7 +1,7 @@
 # Online Order Bot Telegram
 
 #### Bot was running with online server database with mysql
-
+#### This project doesn't completely
 
 ## How To Start
 ```sh
