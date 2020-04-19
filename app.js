@@ -37,19 +37,32 @@ let total = 0;
 
 const welcomebot = `Selamat Datang !
 Mau Cari Barang Apa?`
-const Listbarang = '/product'
 const Deksripsi = '/description'
 const Checkcart = '/keranjang'
+const Bantuan = '/help'
+const Listbarang = '/product'
+const Pesan = '/order'
+
+
 
     bot.onText(/\/start|\halo|\hi|\hy|\hai/, (msg) => {
-    bot.sendMessage(msg.chat.id, `Halo ${msg.chat.last_name} ${welcomebot}`);
-    bot.sendMessage(msg.chat.id, `Silahkan Lihat List Produk ${Listbarang}`)
+    bot.sendMessage(msg.chat.id, `Halo ${msg.chat.last_name} ${welcomebot}`)
     bot.sendMessage(msg.chat.id, `Tentang Toko Ini ${Deksripsi}`)
+    bot.sendMessage(msg.chat.id, `Temukan yang kamu butuhkan disini ${Bantuan}`)
   });
 
 //deskripsi produk
 bot.onText(/\/description/, msg => {
     bot.sendMessage(msg.chat.id, `Ipay'store Local Pride toko, menjual brand local mulai dari sepatu, apparel, denim etc`)
+})
+
+
+bot.onText(/\/help/, msg => {
+    bot.sendMessage(msg.chat.id, `*Selamat Datang di Pusat Bantuan Toko Kami, Silahkan temukan yang kamu butuhkan disini*
+                                    =======================================================`)
+    bot.sendMessage(msg.chat.id, `Untuk meilhat list produk, silahkan ke sini ${Listbarang}`)
+    bot.sendMessage(msg.chat.id, `Untuk Order, silahkan ke sini ${Pesan}`)
+
 })
 
   // Request List Produk
@@ -155,6 +168,35 @@ Silahkan cek keranjang belanja anda ${Checkcart}`;
 		});
 });
 
+//order produk
+bot.onText(/\/order/, async (msg) => {
+    const chatId = msg.chat.id;
+    await bot.sendMessage(chatId, `Halo ${msg.chat.last_name}, untuk melakukan order silahkan daftar terkebih dahulu ya!!
+                                                                ======================================================
+Silahkan isikan data dengan format berikut ini: *Nama* - *Email* - *No. Telp*`)
+    bot.sendMessage(chatId, `Ex : *Muhammad Zulfadli* - *zulfadlisimatupang48@gmail.com* - *085760860595*`)
+})
+
+// bot.on('message', (msg) => {
+//     axios.post(`http://localhost:8080/api/v1/customer`, 
+//     {
+//         data: {
+//             attributes:{
+//                 full_name: full_name,
+//                 phone_number: phone_number,
+//                 username: username,
+//                 email: email
+//             }
+//         }
+//     }) .then(response => {
+//         console.log(response)
+//     }) .catch(function(error) {
+//         console.log(error)
+//     })
+//     bot.sendMessage("Yeay anda telah terdaftar, Silahkan belanja apapun seleramu!!")
+// })
+
+
 // Check Cart
 bot.onText(/\/keranjang/, msg => {
     let data = JSON.stringify(keranjang)
@@ -166,8 +208,6 @@ bot.onText(/\/keranjang/, msg => {
 Total Belanja Kamu Sebesar Rp. *${total}*`, { parse_mode: "Markdown" }
     )
 })
-
-
 
 
 // let { Botkit } = require('botkit');
