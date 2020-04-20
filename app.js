@@ -35,33 +35,33 @@ app.use('/api/v1/orderdetail', OrderItemRouter)
 let keranjang = [];
 let total = 0;
 
-const welcomebot = `Selamat Datang !
-Mau Cari Barang Apa?`
+const welcomebot = `Selamat Datang !\nUntuk memudahkan kamu dalam berbelanja, \nSilahkan daftar terlebih dahulu ya`
 const Deksripsi = '/description'
 const Checkcart = '/keranjang'
 const Bantuan = '/help'
 const Listbarang = '/product'
-const Pesan = '/order'
+const Profil = '/me'
+const Daftar = '/register'
 
 
 
     bot.onText(/\/start|\halo|\hi|\hy|\hai/, (msg) => {
-    bot.sendMessage(msg.chat.id, `Halo ${msg.chat.last_name} ${welcomebot}`)
+    bot.sendMessage(msg.chat.id, `Halo ${msg.chat.last_name} ${welcomebot}\n Silahkan ikuti format berikut :\n${Daftar} Zulfadli - zulfadli48 - ipay48@gmail.com - 085760860595`)
     bot.sendMessage(msg.chat.id, `Tentang Toko Ini ${Deksripsi}`)
     bot.sendMessage(msg.chat.id, `Temukan yang kamu butuhkan disini ${Bantuan}`)
   });
 
 //deskripsi produk
 bot.onText(/\/description/, msg => {
-    bot.sendMessage(msg.chat.id, `Ipay'store Local Pride toko, menjual brand local mulai dari sepatu, apparel, denim etc`)
+    bot.sendMessage(msg.chat.id, `Ipay'store`)
 })
 
 
 bot.onText(/\/help/, msg => {
     bot.sendMessage(msg.chat.id, `*Selamat Datang di Pusat Bantuan Toko Kami, Silahkan temukan yang kamu butuhkan disini*
                                     =======================================================`)
-    bot.sendMessage(msg.chat.id, `Untuk meilhat list produk, silahkan ke sini ${Listbarang}`)
-    bot.sendMessage(msg.chat.id, `Untuk Order, silahkan ke sini ${Pesan}`)
+    bot.sendMessage(msg.chat.id, `Untuk Melihat detail profil ${Profil}`)
+    bot.sendMessage(msg.chat.id, `Untuk Order, silahkan ke sini ${Listbarang}`)
 
 })
 
@@ -138,16 +138,14 @@ const opts1 = {
 						price: response.data.data.price,
 						quantity: 1
 					});
-					text = `Product berhasil ditambahkan ke keranjang, 
-Silahkan cek keranjang belanja anda ${Checkcart}`;
+					text = `Product berhasil ditambahkan ke keranjang, \nSilahkan cek keranjang belanja anda ${Checkcart}`;
 					bot.editMessageText(text, opts2);
 				}
 				else {
 					let i = keranjang.findIndex(item => item.name == response.data.data.name);
 					if (i != -1) {
 						keranjang[i].quantity += 1;
-                        text = `Product berhasil ditambahkan ke keranjang, 
-Silahkan cek keranjang belanja anda ${Checkcart}`;
+                        text = `Product berhasil ditambahkan ke keranjang, \nSilahkan cek keranjang belanja anda ${Checkcart}`;
 						bot.editMessageText(text, opts2);
 					}
 					else {
@@ -156,8 +154,7 @@ Silahkan cek keranjang belanja anda ${Checkcart}`;
 							price: response.data.data.price,
 							quantity: 1
 						});
-                        text = `Product berhasil ditambahkan ke keranjang, 
-Silahkan cek keranjang belanja anda ${Checkcart}`;
+                        text = `Product berhasil ditambahkan ke keranjang, \nSilahkan cek keranjang belanja anda ${Checkcart}`;
 						bot.editMessageText(text, opts2);
 						
 					}
@@ -168,45 +165,53 @@ Silahkan cek keranjang belanja anda ${Checkcart}`;
 		});
 });
 
-//order produk
-bot.onText(/\/order/, async (msg) => {
-    const chatId = msg.chat.id;
-    await bot.sendMessage(chatId, `Halo ${msg.chat.last_name}, untuk melakukan order silahkan daftar terkebih dahulu ya!!
-                                                                ======================================================
-Silahkan isikan data dengan format berikut ini: *Nama* - *Email* - *No. Telp*`)
-    bot.sendMessage(chatId, `Ex : *Muhammad Zulfadli* - *zulfadlisimatupang48@gmail.com* - *085760860595*`)
-})
-
-// bot.on('message', (msg) => {
-//     axios.post(`http://localhost:8080/api/v1/customer`, 
-//     {
-//         data: {
-//             attributes:{
-//                 full_name: full_name,
-//                 phone_number: phone_number,
-//                 username: username,
-//                 email: email
-//             }
-//         }
-//     }) .then(response => {
-//         console.log(response)
-//     }) .catch(function(error) {
-//         console.log(error)
-//     })
-//     bot.sendMessage("Yeay anda telah terdaftar, Silahkan belanja apapun seleramu!!")
-// })
-
-
-// Check Cart
+//cek keranjang
 bot.onText(/\/keranjang/, msg => {
     let data = JSON.stringify(keranjang)
     for (let i = 0; i < keranjang.length; i++) {
         total+= keranjang[i].quantity * keranjang[i].price
     }
-    bot.sendMessage(msg.chat.id, `Berikut Ini List Belanjaan kamu :  
-*${data}* 
-Total Belanja Kamu Sebesar Rp. *${total}*`, { parse_mode: "Markdown" }
+    bot.sendMessage(msg.chat.id, `Berikut Ini List Belanjaan kamu : \n*${data}* \nTotal Belanja Kamu Rp. *${total}*`, { parse_mode: "Markdown" }
     )
+})
+
+//daftar akun
+bot.onText(/\/register (.+)/, async (msg, data)=> {
+    const [full_name,username,email,phone_number] = data[1].split('-')
+
+    try{
+        const response = await axios.post ('http://localhost:8080/api/v1/customer', {
+            "data" :{
+                "attributes": {
+                    "id": msg.from.id,
+                    "full_name": full_name,
+                    "username": username,
+                    "email": email,
+                    "phone_number": phone_number
+                }
+            }
+        })
+        bot.sendMessage(msg.chat.id, `Yeay pendaftaran kamu berhasil, silahkan lihat detail profil kamu /me\n atau ingin melakukan order silahkan lihat list produk ${Listbarang}`)
+    } catch (error){
+        console.log(error)
+        bot.sendMessage(msg.chat.id, 'Kamu telah terdaftar')
+    }
+})
+
+
+bot.onText(/\/me/, async (msg)=>{
+    const id = msg.from.id
+    try {
+        const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}`)
+        bot.sendMessage(msg.chat.id, `Berikut detail profil kamu : \nNama : ${response.data.data.full_name} \nUsername: ${response.data.data.username}\nEmail: ${response.data.data.email}\nPhone number: ${response.data.data.phone_number}.`, {
+            parse_mode:'Markdown'
+        })
+    } catch (error) {
+        console.log(error);
+        bot.sendMessage(msg.chat.id, `Maaf, kamu belum terdaftar disistem kami.\nSilahkan mendaftar dengan mengirimkan data dengan format berikut : \n/daftar *nama*-*username*-*email*-*phone number*\nContoh : /daftar *Zulfadli*-*zulfadli*-* ipay48@gmail.com*-*085760860595*`,{
+            parse_mode:"Markdown"
+        })
+    }
 })
 
 
