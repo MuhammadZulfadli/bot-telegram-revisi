@@ -1,6 +1,7 @@
 # Online Order Bot Telegram
 
-### Noted: *Database server was disconnect, therefore database still working on local server
+### Noted: *Database server was disconnect, therefore database still working on local server and this is not already use a botkit
+
 #### Bot was running with online server database with mysql
 #### This project doesn't completely
 
